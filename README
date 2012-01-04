@@ -1,0 +1,8 @@
+Release Notes
+
+v.1
+
+1/4/12
+
+Pre-alpha. Going to get some basic methods up to test I/O operations on Gmail messages and Google Spreadsheets.
+Also planned: write-up on how to get this code into a Google Spreadsheet and working.
