@@ -1,0 +1,11 @@
+var DEBUG = 1;
+
+function readMail() {
+  var threads = GmailApp.getInboxThreads();
+  for (var i = 0; i < threads.length; i++) {
+    if (DEBUG == 1) {
+      Logger.log(threads[i].getFirstMessageSubject());
+    }
+    //threads[i].
+  }
+}
