@@ -41,15 +41,15 @@ function readMail() {
     
     // Okay, so if the sentinel label WAS found, do NOT add the 1st Gmail message in the thread into the 
     // spreadsheet
-    if (add_thread_to_spreadsheet = true) {
+    //if (add_thread_to_spreadsheet = true) {
       
       // DEBUG CODE ********* //
-      //if (DEBUG == 1) {
-      //  Logger.log(threads[i].getFirstMessageSubject());
-      //}
+      if (DEBUG == 1) {
+        Logger.log("DEBUG: Add thread to spreadsheet? " + add_thread_to_spreadsheet);
+      }
       // END DEBUG CODE ***** //
       
-    }
+    //}
     
     var messages = GmailApp.getMessagesForThread(threads[i]);
     
