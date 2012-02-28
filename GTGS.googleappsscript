@@ -13,7 +13,7 @@ function readMail() {
   // */
   var threads = GmailApp.getInboxThreads(0, inbox_search_depth);
   for (var i = 0; i < threads.length; i++) {
-    var add_thread_to_spreadsheet = false;
+    var add_thread_to_spreadsheet = true; // Assume we are going to add every thread we come across to the spreadsheet
     // DEBUG CODE ***** //
     if (DEBUG == 1) {
       Logger.log(threads[i].getFirstMessageSubject());
@@ -31,11 +31,15 @@ function readMail() {
     // the target spreadsheet
     threadlabels = threads[i].getLabels();
     for(var label in threadlabels) {
-      if(label != label_sentinel_value && label_match == false){ // This is annoying. Check to see if the label matches the sentinel value and should therefore NOT be added AND check to see if the sentinel label has been seen before.
-        add_thread_to_spreadsheet = true;
+      if(label == label_sentinel_value || label_match == true ){ // This is annoying. Check to see if the label matches the sentinel value and should therefore NOT be added AND check to see if the sentinel label has been seen before.
+        add_thread_to_spreadsheet = false;
+        
+        if(label == label_sentinel_value) {
+          label_match = true;
+        }
       }
       else {
-        label_match == true;
+        add_thread_to_spreadsheet = false;
       }
     }
     
