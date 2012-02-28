@@ -7,6 +7,7 @@ var notification_address = "";
 */
 var inbox_search_depth = 100; 
 var label_sentinel_value = "Ticket Created";
+var label_sentinel_object;
 var spreadsheet = SpreadsheetApp.openById(google_spreadsheet_id);
 var active_sheet = spreadsheet.setActiveSheet(spreadsheet.getSheets()[0]); // Select the first sheet as the active sheet
 
@@ -41,6 +42,7 @@ function readMail() {
         if(label == label_sentinel_value) {
           label_match = true;
         }
+        
       }
       else {
         add_thread_to_spreadsheet = false;
@@ -77,9 +79,21 @@ function readMail() {
         Logger.log("Issue BODY text: " + messages[x].getBody());
         }
         
+        // Add the message to the spreadsheet!
         // .replace(/<(?:.|\n)*?>/gm, '') Replace all HTML tags
         // .replace(/(\r\n|\n|\r)/gm," ") Replace all newlines with spaces
-        active_sheet.appendRow([messages[x].getFrom(), messages[x].getDate(), messages[x].getBody().replace(/<(?:.|\n)*?>/gm, '').replace(/(\r\n|\n|\r)/gm," ")]);
+        active_sheet.appendRow([messages[x].getFrom(), messages[x].getDate(), 
+                                messages[x].getBody().replace(/<(?:.|\n)*?>/gm, '').replace(/(\r\n|\n|\r)/gm," ")]);
+        
+        // Now mark the thread as added
+        threadlabels2 = threads[i].getLabels();
+        for(var label2 in threadlabels2) {
+          if (label2.getName != label_sentinel_value) {
+            //threads[i].addLabel(label_sentinel_object);
+          }
+        }
+        
+        //threads[i].addLabel(label_sentinel_object)
       }
       
     }
