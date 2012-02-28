@@ -1,25 +1,44 @@
 var DEBUG = 1;
 var google_spreadsheet_id = "";
-var inbox_search_depth = 100;
+
+/* This can't go over a certain number defined by Google. Unless you're dealing 
+// with over 100 emails/minute, leave it at 100. Scaling may become an issue at large traffic sizes.
+*/
+var inbox_search_depth = 100; 
+var label_sentinel_value = "Ticket Created";
 
 function readMail() {
+  // /*
   // Loop through all or a certain amount of email threads in the Gmail inbox. This loops through threads
+  // */
   var threads = GmailApp.getInboxThreads(0, inbox_search_depth);
   for (var i = 0; i < threads.length; i++) {
-    
+    var add_thread_to_spreadsheet = false;
+    // DEBUG CODE ***** //
     if (DEBUG == 1) {
       Logger.log(threads[i].getFirstMessageSubject());
     }
+    // END DEBUG CODE ***** //
     
     if (threads[i].isUnread) {
         Logger.log("THREAD " + i + " IS MARKED UNREAD!");
       //threads[i].markRead()
       }
     
-    //threads[i].
+    // Now read the thread's labels, and see if it matches the label sentinel value, and is therefore already in
+    // the target spreadsheet
+    threadlabels = threads[i].getLabels();
+    for(var label in threadlabels) {
+      if(label == label_sentinel_value){
+        add_thread_to_spreadsheet = true;
+      }
+    }
+    
     var messages = GmailApp.getMessagesForThread(threads[i]);
     
-    // Now loop through all messages in a thread.
+    // /*
+    // Now loop through all messages in a thread. This might be too granular for some thread-based operations.
+    // */
     for (var x = 0 ; x < messages.length; x++) {
       
       if (DEBUG == 1 && messages[x].isUnread) {
