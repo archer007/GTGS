@@ -25,13 +25,30 @@ function readMail() {
       //threads[i].markRead()
       }
     
+    
+    var label_match = false;
     // Now read the thread's labels, and see if it matches the label sentinel value, and is therefore already in
     // the target spreadsheet
     threadlabels = threads[i].getLabels();
     for(var label in threadlabels) {
-      if(label == label_sentinel_value){
+      if(label != label_sentinel_value && label_match == false){ // This is annoying. Check to see if the label matches the sentinel value and should therefore NOT be added AND check to see if the sentinel label has been seen before.
         add_thread_to_spreadsheet = true;
       }
+      else {
+        label_match == true;
+      }
+    }
+    
+    // Okay, so if the sentinel label WAS found, do NOT add the 1st Gmail message in the thread into the 
+    // spreadsheet
+    if (add_thread_to_spreadsheet = true) {
+      
+      // DEBUG CODE ********* //
+      //if (DEBUG == 1) {
+      //  Logger.log(threads[i].getFirstMessageSubject());
+      //}
+      // END DEBUG CODE ***** //
+      
     }
     
     var messages = GmailApp.getMessagesForThread(threads[i]);
@@ -45,12 +62,12 @@ function readMail() {
         Logger.log("subject: " + messages[x].getSubject());
       }
       
-      if (messages[x].isUnread) {
-        Logger.log("ABOVE MSG MARKED UNREAD!");
+      if (add_thread_to_spreadsheet == true && x == 0) {
+        Logger.log("Issue BODY text: " + messages[x].getBody());
       }
       
       if (x==0) {// On ONLY the first message, create a new issue in the spreadsheet
-        
+        // TODO
       }
     }
   }
