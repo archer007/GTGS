@@ -1,5 +1,6 @@
 var DEBUG = 0; // Global debug variable
 var google_spreadsheet_id = "";
+var notification_address = "";
 
 /* Thhe following var can't go over a certain number defined by Google. Unless you're dealing 
 // with over 100 emails/minute, leave it at 100. Scaling may become an issue at large traffic sizes.
@@ -61,7 +62,8 @@ function readMail() {
     var messages = GmailApp.getMessagesForThread(threads[i]);
     
     // /*
-    // Now loop through all messages in a thread. This is too granular for some thread-based operations, and is also horribly unoptimized.
+    // Now loop through all messages in a thread. This is too granular for some thread-based 
+    // operations, and is also horribly unoptimized.
     // */
     for (var x = 0 ; x < messages.length; x++) {
       
@@ -75,7 +77,9 @@ function readMail() {
         Logger.log("Issue BODY text: " + messages[x].getBody());
         }
         
-        active_sheet.appendRow([messages[x].getFrom(), messages[x].getDate(), messages[x].getBody().replace(/<(?:.|\n)*?>/gm, '')]);
+        // .replace(/<(?:.|\n)*?>/gm, '') Replace all HTML tags
+        // .replace(/(\r\n|\n|\r)/gm," ") Replace all newlines with spaces
+        active_sheet.appendRow([messages[x].getFrom(), messages[x].getDate(), messages[x].getBody().replace(/<(?:.|\n)*?>/gm, '').replace(/(\r\n|\n|\r)/gm," ")]);
       }
       
     }
