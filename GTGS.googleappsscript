@@ -1,11 +1,13 @@
-var DEBUG = 1;
+var DEBUG = 0; // Global debug variable
 var google_spreadsheet_id = "";
 
-/* This can't go over a certain number defined by Google. Unless you're dealing 
+/* Thhe following var can't go over a certain number defined by Google. Unless you're dealing 
 // with over 100 emails/minute, leave it at 100. Scaling may become an issue at large traffic sizes.
 */
 var inbox_search_depth = 100; 
 var label_sentinel_value = "Ticket Created";
+var spreadsheet = SpreadsheetApp.openById(google_spreadsheet_id);
+var active_sheet = spreadsheet.setActiveSheet(spreadsheet.getSheets()[0]); // Select the first sheet as the active sheet
 
 function readMail() {
   // /*
@@ -14,21 +16,22 @@ function readMail() {
   var threads = GmailApp.getInboxThreads(0, inbox_search_depth);
   for (var i = 0; i < threads.length; i++) {
     var add_thread_to_spreadsheet = true; // Assume we are going to add every thread we come across to the spreadsheet
+    
     // DEBUG CODE ***** //
     if (DEBUG == 1) {
       Logger.log(threads[i].getFirstMessageSubject());
+    
+      if (threads[i].isUnread) {
+        Logger.log("THREAD " + i + " IS MARKED UNREAD!");
+        //threads[i].markRead()
+      }
     }
     // END DEBUG CODE ***** //
     
-    if (threads[i].isUnread) {
-        Logger.log("THREAD " + i + " IS MARKED UNREAD!");
-      //threads[i].markRead()
-      }
-    
-    
     var label_match = false;
     // Now read the thread's labels, and see if it matches the label sentinel value, and is therefore already in
-    // the target spreadsheet
+    // the target spreadsheet. I really don't like this section of code, it needs cleanup and testing. There is
+    // definitely a cleaner way to implement the loops than this...
     threadlabels = threads[i].getLabels();
     for(var label in threadlabels) {
       if(label == label_sentinel_value || label_match == true ){ // This is annoying. Check to see if the label matches the sentinel value and should therefore NOT be added AND check to see if the sentinel label has been seen before.
@@ -58,7 +61,7 @@ function readMail() {
     var messages = GmailApp.getMessagesForThread(threads[i]);
     
     // /*
-    // Now loop through all messages in a thread. This might be too granular for some thread-based operations.
+    // Now loop through all messages in a thread. This is too granular for some thread-based operations, and is also horribly unoptimized.
     // */
     for (var x = 0 ; x < messages.length; x++) {
       
@@ -67,12 +70,14 @@ function readMail() {
       }
       
       if (add_thread_to_spreadsheet == true && x == 0) {
+        
+        if (DEBUG == 1){
         Logger.log("Issue BODY text: " + messages[x].getBody());
+        }
+        
+        active_sheet.appendRow([messages[x].getFrom(), messages[x].getDate(), messages[x].getBody().replace(/<(?:.|\n)*?>/gm, '')]);
       }
       
-      if (x==0) {// On ONLY the first message, create a new issue in the spreadsheet
-        // TODO
-      }
     }
   }
 }
