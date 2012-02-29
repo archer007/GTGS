@@ -1,6 +1,6 @@
 var DEBUG = 0; // Global debug variable
-var google_spreadsheet_id = "";
-var notification_email_address = "";
+var google_spreadsheet_id = "0AqDMovr9hxAidE5lcDBtSndyU1FfaGRGd0gzVEJnX3c";
+var notification_email_address = "test@ipahawaii.org";
 
 /* Thhe following var can't go over a certain number defined by Google. Unless you're dealing 
 // with over 100 emails/minute, leave it at 100. Scaling may become an issue at large traffic sizes.
@@ -51,10 +51,12 @@ function readMail() {
         // END DEBUG CODE ***** //
         
         // if the message is NOT starred
-        if (!messages[x].isStarred()) {
+        if (!messages[x].isStarred() && !messages[x].getBody().match("#noissue")) {
           active_sheet.appendRow([messages[x].getDate(), messages[x].getFrom(), 
                                   messages[x].getBody().replace(/<(?:.|\n)*?>/gm, '').replace(/(\r\n|\n|\r)/gm," ")]);
           messages[x].star();
+          
+          //messages[x].getBody().match("#noissue");
           
           GmailApp.sendEmail(notification_email_address, "Issue Received", "Issue has been logged at https://docs.google.com/spreadsheet/ccc?key=" + google_spreadsheet_id + "#gid=0");
         }
