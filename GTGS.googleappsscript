@@ -1,6 +1,8 @@
 var DEBUG = 0; // Global debug variable
-var google_spreadsheet_id = "0AqDMovr9hxAidE5lcDBtSndyU1FfaGRGd0gzVEJnX3c";
-var notification_email_address = "test@ipahawaii.org";
+var google_spreadsheet_id = "";
+var notification_email_address = "";
+var email_no_reply_list =["","",""];
+var no_issue_sentinel_word = "#noissue";
 
 /* Thhe following var can't go over a certain number defined by Google. Unless you're dealing 
 // with over 100 emails/minute, leave it at 100. Scaling may become an issue at large traffic sizes.
@@ -12,6 +14,8 @@ var spreadsheet = SpreadsheetApp.openById(google_spreadsheet_id);
 var active_sheet = spreadsheet.setActiveSheet(spreadsheet.getSheets()[0]); // Select the first sheet as the active sheet
 
 function readMail() {
+  
+  var email_no_reply_list =["","",""];
   // /*
   // Loop through all or a certain amount of email threads in the Gmail inbox. This loops through threads
   // */
@@ -51,14 +55,31 @@ function readMail() {
         // END DEBUG CODE ***** //
         
         // if the message is NOT starred
-        if (!messages[x].isStarred() && !messages[x].getBody().match("#noissue")) {
-          active_sheet.appendRow([messages[x].getDate(), messages[x].getFrom(), 
-                                  messages[x].getBody().replace(/<(?:.|\n)*?>/gm, '').replace(/(\r\n|\n|\r)/gm," ")]);
+        if (!messages[x].isStarred() ) {
+          
           messages[x].star();
           
-          //messages[x].getBody().match("#noissue");
+          var email_matches_no_reply_list = false;
+            for (var z = 0; z < email_no_reply_list.length; z++) {
+              if (!messages[x].getFrom().match(email_no_reply_list[z]) ) {
+                
+              }
+              else {  
+                email_matches_no_reply_list = true;
+              }
           
-          GmailApp.sendEmail(notification_email_address, "Issue Received", "Issue has been logged at https://docs.google.com/spreadsheet/ccc?key=" + google_spreadsheet_id + "#gid=0");
+          if (!messages[x].getBody().match("#noissue") && (!email_matches_no_reply_list) && z==0 ) {
+            
+            active_sheet.appendRow([messages[x].getDate(), messages[x].getFrom(), 
+                                  messages[x].getBody().replace(/<(?:.|\n)*?>/gm, '').replace(/(\r\n|\n|\r)/gm," ")]);
+          
+            GmailApp.sendEmail(notification_email_address, "Issue Received", "Issue has been logged at https://docs.google.com/spreadsheet/ccc?key=" 
+                             + google_spreadsheet_id + "#gid=0");
+              
+            }
+            
+            
+          }
         }
         
       }
