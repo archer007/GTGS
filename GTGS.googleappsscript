@@ -1,5 +1,5 @@
 var DEBUG = 0; // Global debug variable
-var google_spreadsheet_id = "0AqDMovr9hxAidE5lcDBtSndyU1FfaGRGd0gzVEJnX3c";
+var google_spreadsheet_id = "";
 var notification_email_address = "";
 
 /* Thhe following var can't go over a certain number defined by Google. Unless you're dealing 
@@ -52,10 +52,13 @@ function readMail() {
         
         // if the message is NOT starred
         if (!messages[x].isStarred()) {
-          active_sheet.appendRow([messages[x].getFrom(), messages[x].getDate(), 
+          active_sheet.appendRow([messages[x].getDate(), messages[x].getFrom(), 
                                   messages[x].getBody().replace(/<(?:.|\n)*?>/gm, '').replace(/(\r\n|\n|\r)/gm," ")]);
           messages[x].star();
+          
+          GmailApp.sendEmail(notification_email_address, "Issue Received", "Issue has been logged at https://docs.google.com/spreadsheet/ccc?key=" + google_spreadsheet_id + "#gid=0");
         }
+        
       }
       
     }

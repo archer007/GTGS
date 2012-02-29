@@ -1,10 +1,13 @@
 Release Notes
 
+.2 
+2/28/11
+Working using stars instead of labels. Can send basic email notifications.
+
 .11
 Added initial loop and debug functionality
 
-v.1
-
+v.1 
 1/4/12
 
 Pre-alpha. Going to get some basic methods up to test I/O operations on Gmail messages and Google Spreadsheets.
